@@ -26,7 +26,7 @@ resource "yandex_container_registry" "registry1" {
 }
 
 locals {
-  folder_id = "<INSERT YOUR FOLDER ID>"
+  folder_id = "b1g9r9apf1n1fq0i45uf"
   service-accounts = toset([
     "catgpt-sa",
   ])
@@ -35,10 +35,12 @@ locals {
     "monitoring.editor",
   ])
 }
+
 resource "yandex_iam_service_account" "service-accounts" {
   for_each = local.service-accounts
   name     = each.key
 }
+
 resource "yandex_resourcemanager_folder_iam_member" "catgpt-roles" {
   for_each  = local.catgpt-sa-roles
   folder_id = local.folder_id
@@ -49,6 +51,7 @@ resource "yandex_resourcemanager_folder_iam_member" "catgpt-roles" {
 data "yandex_compute_image" "coi" {
   family = "container-optimized-image"
 }
+
 resource "yandex_compute_instance" "catgpt-1" {
     platform_id        = "standard-v2"
     service_account_id = yandex_iam_service_account.service-accounts["catgpt-sa"].id
